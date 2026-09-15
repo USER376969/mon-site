@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>BombParty Helper</title>
+
+    <style>
+        *
+        {
+            box-sizing: border-box;
+        }
+
+        html,
+        body
+        {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        body
+        {
+            overflow: hidden;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #10121d 0%,
+                    #181525 35%,
+                    #211629 70%,
+                    #12121c 100%
+                );
+
+            position: relative;
+        }
+
+
+        /*
+            Lueurs très discrètes
+            dans le fond
+        */
+
+        body::after
+        {
+            content: "";
+
+            position: fixed;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            background:
+                radial-gradient(
+                    circle at 20% 25%,
+                    rgba(100, 80, 180, 0.14),
+                    transparent 35%
+                ),
+
+                radial-gradient(
+                    circle at 80% 75%,
+                    rgba(180, 70, 130, 0.10),
+                    transparent 40%
+                ),
+
+                radial-gradient(
+                    circle at 50% 50%,
+                    rgba(255, 255, 255, 0.02),
+                    transparent 45%
+                );
+
+            z-index: 0;
+        }
+
+
+        /*
+            Zone des cœurs
+        */
+
+        .hearts
+        {
+            position: fixed;
+
+            inset: 0;
+
+            overflow: hidden;
+
+            pointer-events: none;
+
+            z-index: 0;
+        }
+
+
+        /*
+            Cœurs individuels
+        */
+
+        .heart
+        {
+            position: absolute;
+
+            color:
+                rgba(
+                    255,
+                    130,
+                    185,
+                    0.10
+                );
+
+            user-select: none;
+
+            filter:
+                blur(0.2px);
+
+            animation:
+                floatHeart
+                14s
+                ease-in-out
+                infinite;
+        }
+
+
+        /*
+            Mouvement léger
+        */
+
+        @keyframes floatHeart
+        {
+            0%,
+            100%
+            {
+                transform:
+                    translateY(0)
+                    rotate(-5deg);
+
+                opacity: 0.45;
+            }
+
+            50%
+            {
+                transform:
+                    translateY(-16px)
+                    rotate(5deg);
+
+                opacity: 1;
+            }
+        }
+
+
+        /*
+            Conteneur principal
+        */
+
+        .container
+        {
+            width: 100%;
+            height: 100vh;
+
+            position: relative;
+
+            z-index: 1;
+        }
+
+
+        /*
+            Champ syllabe
+        */
+
+        #syllabe
+        {
+            position: absolute;
+
+            top: 31%;
+            left: 50%;
+
+            transform:
+                translate(
+                    -50%,
+                    -50%
+                );
+
+            width: 500px;
+
+            background: transparent;
+
+            border: none;
+
+            outline: none;
+
+            color: white;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            font-size: 72px;
+
+            font-weight: 800;
+
+            line-height: 1;
+
+            text-align: center;
+
+            padding: 0;
+
+            margin: 0;
+
+            caret-color:
+                #ff91bd;
+
+            text-shadow:
+                0 3px 18px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.45
+                );
+        }
+
+
+        #syllabe::placeholder
+        {
+            color:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.22
+                );
+
+            font-size: 72px;
+
+            font-weight: 800;
+        }
+
+
+        /*
+            Résultat
+        */
+
+        #resultat
+        {
+            position: absolute;
+
+            top: 54%;
+            left: 50%;
+
+            transform:
+                translate(
+                    -50%,
+                    -50%
+                );
+
+            color: white;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            font-size: 72px;
+
+            font-weight: 800;
+
+            line-height: 1;
+
+            text-align: center;
+
+            white-space: nowrap;
+
+            text-shadow:
+                0 3px 18px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.45
+                );
+        }
+
+
+        /*
+            Partie correspondant
+            à la syllabe
+        */
+
+        .match
+        {
+            color:
+                #ff8fbd;
+
+            text-shadow:
+                0 0 18px
+                rgba(
+                    255,
+                    100,
+                    170,
+                    0.25
+                );
+        }
+
+
+        /*
+            Aucun mot trouvé
+        */
+
+        .not-found
+        {
+            font-size: 72px;
+
+            color:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.42
+                );
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+    <!--
+        Cœurs décoratifs
+    -->
+
+    <div class="hearts">
+
+        <span
+            class="heart"
+            style="
+                left: 6%;
+                top: 12%;
+                font-size: 30px;
+                animation-delay: -2s;
+            "
+        >
+            ♥
+        </span>
+
+
+        <span
+            class="heart"
+            style="
+                left: 14%;
+                top: 62%;
+                font-size: 18px;
+                animation-delay: -8s;
+            "
+        >
+            ♥
+        </span>
+
+
+        <span
+            class="heart"
+            style="
+                left: 23%;
+                top: 30%;
+                font-size: 24px;
+                animation-delay: -4s;
+            "
+        >
+            ♥
+        </span>
+
+
+        <span
+            class="heart"
+            style="
+                left: 31%;
+                top: 82%;
+                font-size: 34px;
+                animation-delay: -10s;
+            "
+        >
+            ♥
+        </span>
+
+
+        <span
+            class="heart"
+            style="
+                left: 41%;
+                top: 9%;
+                font-size: 17px;
+                animation-delay: -6s;
+            "
+        >
+            ♥
+        </span>
+
+
+        <span
+            class="heart"
+            style="
+                left: 53%;
+                top: 72%;
+                font-size: 25px;
+                animation-delay: -1s;
+            "
+        >
+            ♥
+        </span>
+
+
+        <span
+            class="heart"
+            style="
+                left: 62%;
+                top: 18%;
+                font-size: 36px;
+                animation-delay: -9s;
+            "
+        >
+            ♥
+        </span>
+
+
+        <span
+            class="heart"
+            style="
+                left: 72%;
+                top: 80%;
+                font-size: 20px;
+                animation-delay: -5s;
+            "
+        >
+            ♥
+        </span>
+
+
+        <span
+            class="heart"
+            style="
+                left: 83%;
+                top: 27%;
+                font-size: 28px;
+                animation-delay: -11s;
+            "
+        >
+            ♥
+        </span>
+
+
+        <span
+            class="heart"
+            style="
+                left: 93%;
+                top: 67%;
+                font-size: 32px;
+                animation-delay: -3s;
+            "
+        >
+            ♥
+        </span>
+
+
+        <span
+            class="heart"
+            style="
+                left: 4%;
+                top: 88%;
+                font-size: 16px;
+                animation-delay: -7s;
+            "
+        >
+            ♥
+        </span>
+
+
+        <span
+            class="heart"
+            style="
+                left: 88%;
+                top: 91%;
+                font-size: 19px;
+                animation-delay: -12s;
+            "
+        >
+            ♥
+        </span>
+
+    </div>
+
+
+    <div class="container">
+
+        <input
+            id="syllabe"
+            type="text"
+            placeholder="syllabe"
+            autocomplete="off"
+            autofocus
+        >
+
+        <div id="resultat"></div>
+
+    </div>
+
+
+    <script>
+
+        const input =
+            document.getElementById(
+                "syllabe"
+            );
+
+
+        const resultat =
+            document.getElementById(
+                "resultat"
+            );
+
+
+        let mots = [];
+
+
+        /*
+            Date du dernier appui
+            sur Suppr / Backspace
+        */
+
+        let dernierSuppr = 0;
+
+
+
+        /*
+            Chargement du dictionnaire
+        */
+
+        fetch("fr.txt")
+
+            .then(
+                response =>
+                    response.text()
+            )
+
+            .then(text =>
+            {
+
+                mots = text
+
+                    .split(/\r?\n/)
+
+                    .map(
+                        mot =>
+                            mot
+                                .trim()
+                                .toLowerCase()
+                    )
+
+                    .filter(
+                        mot =>
+                            mot.length > 0
+                    );
+
+
+                /*
+                    Trie les mots
+                    du plus court
+                    au plus long
+                */
+
+                mots.sort(
+                    (a, b) =>
+                    {
+
+                        if (
+                            a.length !==
+                            b.length
+                        )
+                        {
+                            return (
+                                a.length -
+                                b.length
+                            );
+                        }
+
+
+                        return (
+                            a.localeCompare(b)
+                        );
+
+                    }
+                );
+
+
+                console.log(
+                    "Dictionnaire chargé :",
+                    mots.length,
+                    "mots"
+                );
+
+            })
+
+
+            .catch(error =>
+            {
+
+                console.error(
+                    "Erreur chargement dictionnaire :",
+                    error
+                );
+
+
+                resultat.innerHTML =
+                    `
+                    <span class="not-found">
+                        Erreur dictionnaire
+                    </span>
+                    `;
+
+            });
+
+
+
+        /*
+            Recherche du mot
+        */
+
+        function chercherMot()
+        {
+
+            const recherche =
+                input.value
+                    .trim()
+                    .toLowerCase();
+
+
+
+            /*
+                Champ vide
+            */
+
+            if (
+                recherche.length === 0
+            )
+            {
+
+                resultat.innerHTML = "";
+
+                return;
+
+            }
+
+
+
+            /*
+                Recherche normale
+                sans espace
+            */
+
+            if (
+                !recherche.includes(" ")
+            )
+            {
+
+                const motTrouve =
+                    mots.find(
+                        mot =>
+                            mot.includes(
+                                recherche
+                            )
+                    );
+
+
+
+                if (!motTrouve)
+                {
+
+                    resultat.innerHTML =
+                        `
+                        <span class="not-found">
+                            Aucun mot
+                        </span>
+                        `;
+
+                    return;
+
+                }
+
+
+
+                const index =
+                    motTrouve.indexOf(
+                        recherche
+                    );
+
+
+                const avant =
+                    motTrouve.slice(
+                        0,
+                        index
+                    );
+
+
+                const milieu =
+                    motTrouve.slice(
+                        index,
+                        index +
+                        recherche.length
+                    );
+
+
+                const apres =
+                    motTrouve.slice(
+                        index +
+                        recherche.length
+                    );
+
+
+
+                resultat.innerHTML =
+                    `
+                    ${avant}
+                    <span class="match">
+                        ${milieu}
+                    </span>
+                    ${apres}
+                    `;
+
+
+                return;
+
+            }
+
+
+
+            /*
+                Recherche avec espaces
+
+                Exemple :
+
+                "ou er"
+
+                cherche un mot contenant
+                d'abord "ou"
+                puis plus loin "er"
+            */
+
+            const morceaux =
+                recherche
+
+                    .split(/\s+/)
+
+                    .filter(
+                        morceau =>
+                            morceau.length > 0
+                    );
+
+
+
+            let motTrouve = null;
+
+            let positionsTrouvees = [];
+
+
+
+            for (
+                const mot of mots
+            )
+            {
+
+                let positionRecherche = 0;
+
+                let positions = [];
+
+                let valide = true;
+
+
+
+                for (
+                    const morceau
+                    of morceaux
+                )
+                {
+
+                    const index =
+                        mot.indexOf(
+                            morceau,
+                            positionRecherche
+                        );
+
+
+
+                    if (
+                        index === -1
+                    )
+                    {
+
+                        valide = false;
+
+                        break;
+
+                    }
+
+
+
+                    positions.push(
+                        {
+                            debut:
+                                index,
+
+                            fin:
+                                index +
+                                morceau.length
+                        }
+                    );
+
+
+
+                    positionRecherche =
+                        index +
+                        morceau.length;
+
+                }
+
+
+
+                if (valide)
+                {
+
+                    motTrouve = mot;
+
+                    positionsTrouvees =
+                        positions;
+
+                    break;
+
+                }
+
+            }
+
+
+
+            /*
+                Aucun mot
+            */
+
+            if (!motTrouve)
+            {
+
+                resultat.innerHTML =
+                    `
+                    <span class="not-found">
+                        Aucun mot
+                    </span>
+                    `;
+
+                return;
+
+            }
+
+
+
+            /*
+                Coloration
+                des différentes syllabes
+            */
+
+            let html = "";
+
+            let dernierePosition = 0;
+
+
+
+            for (
+                const position
+                of positionsTrouvees
+            )
+            {
+
+                html +=
+                    motTrouve.slice(
+                        dernierePosition,
+                        position.debut
+                    );
+
+
+                html +=
+                    `
+                    <span class="match">
+                        ${
+                            motTrouve.slice(
+                                position.debut,
+                                position.fin
+                            )
+                        }
+                    </span>
+                    `;
+
+
+                dernierePosition =
+                    position.fin;
+
+            }
+
+
+
+            html +=
+                motTrouve.slice(
+                    dernierePosition
+                );
+
+
+
+            resultat.innerHTML =
+                html;
+
+        }
+
+
+
+        /*
+            Recherche automatiquement
+            à chaque frappe
+        */
+
+        input.addEventListener(
+            "input",
+            chercherMot
+        );
+
+
+
+        /*
+            Suppr / Backspace
+
+            Si aucun Suppr n'a été utilisé
+            depuis 2 secondes :
+
+            prochain Suppr
+            = efface tout.
+
+            Sinon :
+            suppression normale
+            d'une lettre.
+        */
+
+        document.addEventListener(
+            "keydown",
+
+            function(event)
+            {
+
+                if (
+                    event.key === "Delete" ||
+                    event.key === "Backspace"
+                )
+                {
+
+                    const maintenant =
+                        Date.now();
+
+
+                    const tempsEcoule =
+                        maintenant -
+                        dernierSuppr;
+
+
+
+                    if (
+                        dernierSuppr === 0 ||
+                        tempsEcoule >= 2000
+                    )
+                    {
+
+                        event.preventDefault();
+
+
+                        input.value = "";
+
+
+                        resultat.innerHTML =
+                            "";
+
+
+                        input.focus();
+
+
+                        chercherMot();
+
+                    }
+
+
+
+                    dernierSuppr =
+                        maintenant;
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>
