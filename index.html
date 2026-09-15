@@ -1,1012 +1,413 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-    <meta charset="UTF-8">
-    <title>BombParty Helper</title>
-
-    <style>
-        *
-        {
-            box-sizing: border-box;
-        }
-
-        html,
-        body
-        {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-        }
-
-        body
-        {
-            overflow: hidden;
-
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #10121d 0%,
-                    #181525 35%,
-                    #211629 70%,
-                    #12121c 100%
-                );
-
-            position: relative;
-        }
-
-
-        /*
-            Lueurs très discrètes
-            dans le fond
-        */
-
-        body::after
-        {
-            content: "";
-
-            position: fixed;
-
-            inset: 0;
-
-            pointer-events: none;
-
-            background:
-                radial-gradient(
-                    circle at 20% 25%,
-                    rgba(100, 80, 180, 0.14),
-                    transparent 35%
-                ),
-
-                radial-gradient(
-                    circle at 80% 75%,
-                    rgba(180, 70, 130, 0.10),
-                    transparent 40%
-                ),
-
-                radial-gradient(
-                    circle at 50% 50%,
-                    rgba(255, 255, 255, 0.02),
-                    transparent 45%
-                );
-
-            z-index: 0;
-        }
-
-
-        /*
-            Zone des cœurs
-        */
-
-        .hearts
-        {
-            position: fixed;
-
-            inset: 0;
-
-            overflow: hidden;
-
-            pointer-events: none;
-
-            z-index: 0;
-        }
-
-
-        /*
-            Cœurs individuels
-        */
-
-        .heart
-        {
-            position: absolute;
-
-            color:
-                rgba(
-                    255,
-                    130,
-                    185,
-                    0.10
-                );
-
-            user-select: none;
-
-            filter:
-                blur(0.2px);
-
-            animation:
-                floatHeart
-                14s
-                ease-in-out
-                infinite;
-        }
-
-
-        /*
-            Mouvement léger
-        */
-
-        @keyframes floatHeart
-        {
-            0%,
-            100%
-            {
-                transform:
-                    translateY(0)
-                    rotate(-5deg);
-
-                opacity: 0.45;
-            }
-
-            50%
-            {
-                transform:
-                    translateY(-16px)
-                    rotate(5deg);
-
-                opacity: 1;
-            }
-        }
-
-
-        /*
-            Conteneur principal
-        */
-
-        .container
-        {
-            width: 100%;
-            height: 100vh;
-
-            position: relative;
-
-            z-index: 1;
-        }
-
-
-        /*
-            Champ syllabe
-        */
-
-        #syllabe
-        {
-            position: absolute;
-
-            top: 31%;
-            left: 50%;
-
-            transform:
-                translate(
-                    -50%,
-                    -50%
-                );
-
-            width: 500px;
-
-            background: transparent;
-
-            border: none;
-
-            outline: none;
-
-            color: white;
-
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
-            font-size: 72px;
-
-            font-weight: 800;
-
-            line-height: 1;
-
-            text-align: center;
-
-            padding: 0;
-
-            margin: 0;
-
-            caret-color:
-                #ff91bd;
-
-            text-shadow:
-                0 3px 18px
-                rgba(
-                    0,
-                    0,
-                    0,
-                    0.45
-                );
-        }
-
-
-        #syllabe::placeholder
-        {
-            color:
-                rgba(
-                    255,
-                    255,
-                    255,
-                    0.22
-                );
-
-            font-size: 72px;
-
-            font-weight: 800;
-        }
-
-
-        /*
-            Résultat
-        */
-
-        #resultat
-        {
-            position: absolute;
-
-            top: 54%;
-            left: 50%;
-
-            transform:
-                translate(
-                    -50%,
-                    -50%
-                );
-
-            color: white;
-
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
-            font-size: 72px;
-
-            font-weight: 800;
-
-            line-height: 1;
-
-            text-align: center;
-
-            white-space: nowrap;
-
-            text-shadow:
-                0 3px 18px
-                rgba(
-                    0,
-                    0,
-                    0,
-                    0.45
-                );
-        }
-
-
-        /*
-            Partie correspondant
-            à la syllabe
-        */
-
-        .match
-        {
-            color:
-                #ff8fbd;
-
-            text-shadow:
-                0 0 18px
-                rgba(
-                    255,
-                    100,
-                    170,
-                    0.25
-                );
-        }
-
-
-        /*
-            Aucun mot trouvé
-        */
-
-        .not-found
-        {
-            font-size: 72px;
-
-            color:
-                rgba(
-                    255,
-                    255,
-                    255,
-                    0.42
-                );
-        }
-
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BombParty Helper</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      overflow: hidden;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at 20% 25%, rgba(100, 80, 180, 0.14), transparent 35%),
+        radial-gradient(circle at 80% 75%, rgba(180, 70, 130, 0.10), transparent 40%),
+        linear-gradient(135deg, #10121d 0%, #181525 35%, #211629 70%, #12121c 100%);
+      color: #fff;
+    }
+
+    .hearts {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .heart {
+      position: absolute;
+      color: rgba(255, 130, 185, 0.10);
+      user-select: none;
+      filter: blur(0.2px);
+      animation: floatHeart 14s ease-in-out infinite;
+    }
+
+    @keyframes floatHeart {
+      0%, 100% {
+        transform: translateY(0) rotate(-5deg);
+        opacity: 0.45;
+      }
+
+      50% {
+        transform: translateY(-16px) rotate(5deg);
+        opacity: 1;
+      }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100vh;
+    }
+
+    #syllabe {
+      position: absolute;
+      top: 31%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(90vw, 700px);
+
+      border: 0;
+      outline: 0;
+      background: transparent;
+      padding: 0;
+      margin: 0;
+
+      color: #fff;
+      caret-color: #ff91bd;
+      text-align: center;
+      font: 800 clamp(42px, 7vw, 72px)/1 Arial, Helvetica, sans-serif;
+
+      text-shadow: 0 3px 18px rgba(0, 0, 0, 0.45);
+    }
+
+    #syllabe::placeholder {
+      color: rgba(255, 255, 255, 0.22);
+    }
+
+    #resultat {
+      position: absolute;
+      top: 54%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      max-width: 94vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      color: #fff;
+      text-align: center;
+      white-space: nowrap;
+      font: 800 clamp(38px, 7vw, 72px)/1 Arial, Helvetica, sans-serif;
+
+      text-shadow: 0 3px 18px rgba(0, 0, 0, 0.45);
+    }
+
+    .match {
+      color: #ff8fbd;
+      text-shadow: 0 0 18px rgba(255, 100, 170, 0.25);
+    }
+
+    .muted {
+      color: rgba(255, 255, 255, 0.42);
+    }
+
+    #status {
+      position: absolute;
+      left: 50%;
+      bottom: 28px;
+      transform: translateX(-50%);
+
+      color: rgba(255, 255, 255, 0.34);
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      text-align: center;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    #status.ok {
+      color: rgba(151, 255, 184, 0.44);
+    }
+
+    #status.error {
+      color: rgba(255, 135, 155, 0.65);
+    }
+  </style>
 </head>
 
-
 <body>
-
-
-    <!--
-        Cœurs décoratifs
-    -->
-
-    <div class="hearts">
-
-        <span
-            class="heart"
-            style="
-                left: 6%;
-                top: 12%;
-                font-size: 30px;
-                animation-delay: -2s;
-            "
-        >
-            ♥
-        </span>
-
-
-        <span
-            class="heart"
-            style="
-                left: 14%;
-                top: 62%;
-                font-size: 18px;
-                animation-delay: -8s;
-            "
-        >
-            ♥
-        </span>
-
-
-        <span
-            class="heart"
-            style="
-                left: 23%;
-                top: 30%;
-                font-size: 24px;
-                animation-delay: -4s;
-            "
-        >
-            ♥
-        </span>
-
-
-        <span
-            class="heart"
-            style="
-                left: 31%;
-                top: 82%;
-                font-size: 34px;
-                animation-delay: -10s;
-            "
-        >
-            ♥
-        </span>
-
-
-        <span
-            class="heart"
-            style="
-                left: 41%;
-                top: 9%;
-                font-size: 17px;
-                animation-delay: -6s;
-            "
-        >
-            ♥
-        </span>
-
-
-        <span
-            class="heart"
-            style="
-                left: 53%;
-                top: 72%;
-                font-size: 25px;
-                animation-delay: -1s;
-            "
-        >
-            ♥
-        </span>
-
-
-        <span
-            class="heart"
-            style="
-                left: 62%;
-                top: 18%;
-                font-size: 36px;
-                animation-delay: -9s;
-            "
-        >
-            ♥
-        </span>
-
-
-        <span
-            class="heart"
-            style="
-                left: 72%;
-                top: 80%;
-                font-size: 20px;
-                animation-delay: -5s;
-            "
-        >
-            ♥
-        </span>
-
-
-        <span
-            class="heart"
-            style="
-                left: 83%;
-                top: 27%;
-                font-size: 28px;
-                animation-delay: -11s;
-            "
-        >
-            ♥
-        </span>
-
-
-        <span
-            class="heart"
-            style="
-                left: 93%;
-                top: 67%;
-                font-size: 32px;
-                animation-delay: -3s;
-            "
-        >
-            ♥
-        </span>
-
-
-        <span
-            class="heart"
-            style="
-                left: 4%;
-                top: 88%;
-                font-size: 16px;
-                animation-delay: -7s;
-            "
-        >
-            ♥
-        </span>
-
-
-        <span
-            class="heart"
-            style="
-                left: 88%;
-                top: 91%;
-                font-size: 19px;
-                animation-delay: -12s;
-            "
-        >
-            ♥
-        </span>
-
-    </div>
-
-
-    <div class="container">
-
-        <input
-            id="syllabe"
-            type="text"
-            placeholder="syllabe"
-            autocomplete="off"
-            autofocus
-        >
-
-        <div id="resultat"></div>
-
-    </div>
-
-
-    <script>
-
-        const input =
-            document.getElementById(
-                "syllabe"
-            );
-
-
-        const resultat =
-            document.getElementById(
-                "resultat"
-            );
-
-
-        let mots = [];
-
-
-        /*
-            Date du dernier appui
-            sur Suppr / Backspace
-        */
-
-        let dernierSuppr = 0;
-
-
-
-        /*
-            Chargement du dictionnaire
-        */
-
-        fetch("fr.txt")
-
-            .then(
-                response =>
-                    response.text()
-            )
-
-            .then(text =>
-            {
-
-                mots = text
-
-                    .split(/\r?\n/)
-
-                    .map(
-                        mot =>
-                            mot
-                                .trim()
-                                .toLowerCase()
-                    )
-
-                    .filter(
-                        mot =>
-                            mot.length > 0
-                    );
-
-
-                /*
-                    Trie les mots
-                    du plus court
-                    au plus long
-                */
-
-                mots.sort(
-                    (a, b) =>
-                    {
-
-                        if (
-                            a.length !==
-                            b.length
-                        )
-                        {
-                            return (
-                                a.length -
-                                b.length
-                            );
-                        }
-
-
-                        return (
-                            a.localeCompare(b)
-                        );
-
-                    }
-                );
-
-
-                console.log(
-                    "Dictionnaire chargé :",
-                    mots.length,
-                    "mots"
-                );
-
-            })
-
-
-            .catch(error =>
-            {
-
-                console.error(
-                    "Erreur chargement dictionnaire :",
-                    error
-                );
-
-
-                resultat.innerHTML =
-                    `
-                    <span class="not-found">
-                        Erreur dictionnaire
-                    </span>
-                    `;
-
-            });
-
-
-
-        /*
-            Recherche du mot
-        */
-
-        function chercherMot()
-        {
-
-            const recherche =
-                input.value
-                    .trim()
-                    .toLowerCase();
-
-
-
-            /*
-                Champ vide
-            */
-
-            if (
-                recherche.length === 0
-            )
-            {
-
-                resultat.innerHTML = "";
-
-                return;
-
-            }
-
-
-
-            /*
-                Recherche normale
-                sans espace
-            */
-
-            if (
-                !recherche.includes(" ")
-            )
-            {
-
-                const motTrouve =
-                    mots.find(
-                        mot =>
-                            mot.includes(
-                                recherche
-                            )
-                    );
-
-
-
-                if (!motTrouve)
-                {
-
-                    resultat.innerHTML =
-                        `
-                        <span class="not-found">
-                            Aucun mot
-                        </span>
-                        `;
-
-                    return;
-
-                }
-
-
-
-                const index =
-                    motTrouve.indexOf(
-                        recherche
-                    );
-
-
-                const avant =
-                    motTrouve.slice(
-                        0,
-                        index
-                    );
-
-
-                const milieu =
-                    motTrouve.slice(
-                        index,
-                        index +
-                        recherche.length
-                    );
-
-
-                const apres =
-                    motTrouve.slice(
-                        index +
-                        recherche.length
-                    );
-
-
-
-                resultat.innerHTML =
-                    `
-                    ${avant}
-                    <span class="match">
-                        ${milieu}
-                    </span>
-                    ${apres}
-                    `;
-
-
-                return;
-
-            }
-
-
-
-            /*
-                Recherche avec espaces
-
-                Exemple :
-
-                "ou er"
-
-                cherche un mot contenant
-                d'abord "ou"
-                puis plus loin "er"
-            */
-
-            const morceaux =
-                recherche
-
-                    .split(/\s+/)
-
-                    .filter(
-                        morceau =>
-                            morceau.length > 0
-                    );
-
-
-
-            let motTrouve = null;
-
-            let positionsTrouvees = [];
-
-
-
-            for (
-                const mot of mots
-            )
-            {
-
-                let positionRecherche = 0;
-
-                let positions = [];
-
-                let valide = true;
-
-
-
-                for (
-                    const morceau
-                    of morceaux
-                )
-                {
-
-                    const index =
-                        mot.indexOf(
-                            morceau,
-                            positionRecherche
-                        );
-
-
-
-                    if (
-                        index === -1
-                    )
-                    {
-
-                        valide = false;
-
-                        break;
-
-                    }
-
-
-
-                    positions.push(
-                        {
-                            debut:
-                                index,
-
-                            fin:
-                                index +
-                                morceau.length
-                        }
-                    );
-
-
-
-                    positionRecherche =
-                        index +
-                        morceau.length;
-
-                }
-
-
-
-                if (valide)
-                {
-
-                    motTrouve = mot;
-
-                    positionsTrouvees =
-                        positions;
-
-                    break;
-
-                }
-
-            }
-
-
-
-            /*
-                Aucun mot
-            */
-
-            if (!motTrouve)
-            {
-
-                resultat.innerHTML =
-                    `
-                    <span class="not-found">
-                        Aucun mot
-                    </span>
-                    `;
-
-                return;
-
-            }
-
-
-
-            /*
-                Coloration
-                des différentes syllabes
-            */
-
-            let html = "";
-
-            let dernierePosition = 0;
-
-
-
-            for (
-                const position
-                of positionsTrouvees
-            )
-            {
-
-                html +=
-                    motTrouve.slice(
-                        dernierePosition,
-                        position.debut
-                    );
-
-
-                html +=
-                    `
-                    <span class="match">
-                        ${
-                            motTrouve.slice(
-                                position.debut,
-                                position.fin
-                            )
-                        }
-                    </span>
-                    `;
-
-
-                dernierePosition =
-                    position.fin;
-
-            }
-
-
-
-            html +=
-                motTrouve.slice(
-                    dernierePosition
-                );
-
-
-
-            resultat.innerHTML =
-                html;
-
+  <div class="hearts" aria-hidden="true">
+    <span class="heart" style="left:6%;top:12%;font-size:30px;animation-delay:-2s">♥</span>
+    <span class="heart" style="left:14%;top:62%;font-size:18px;animation-delay:-8s">♥</span>
+    <span class="heart" style="left:23%;top:30%;font-size:24px;animation-delay:-4s">♥</span>
+    <span class="heart" style="left:31%;top:82%;font-size:34px;animation-delay:-10s">♥</span>
+    <span class="heart" style="left:41%;top:9%;font-size:17px;animation-delay:-6s">♥</span>
+    <span class="heart" style="left:53%;top:72%;font-size:25px;animation-delay:-1s">♥</span>
+    <span class="heart" style="left:62%;top:18%;font-size:36px;animation-delay:-9s">♥</span>
+    <span class="heart" style="left:72%;top:80%;font-size:20px;animation-delay:-5s">♥</span>
+    <span class="heart" style="left:83%;top:27%;font-size:28px;animation-delay:-11s">♥</span>
+    <span class="heart" style="left:93%;top:67%;font-size:32px;animation-delay:-3s">♥</span>
+    <span class="heart" style="left:4%;top:88%;font-size:16px;animation-delay:-7s">♥</span>
+    <span class="heart" style="left:88%;top:91%;font-size:19px;animation-delay:-12s">♥</span>
+  </div>
+
+  <main class="container">
+    <input
+      id="syllabe"
+      type="text"
+      placeholder="syllabe"
+      autocomplete="off"
+      autocapitalize="off"
+      spellcheck="false"
+      autofocus
+    >
+
+    <div id="resultat"></div>
+    <div id="status">Chargement du dictionnaire…</div>
+  </main>
+
+  <script>
+    "use strict";
+
+    const input = document.getElementById("syllabe");
+    const resultat = document.getElementById("resultat");
+    const status = document.getElementById("status");
+
+    let mots = [];
+    let dictionnairePret = false;
+    let erreurDictionnaire = false;
+    let dernierSuppr = 0;
+
+    function echapperHTML(texte) {
+      return texte.replace(/[&<>"']/g, caractere => {
+        const table = {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;"
+        };
+
+        return table[caractere];
+      });
+    }
+
+    function afficherMessage(message) {
+      resultat.innerHTML = `<span class="muted">${echapperHTML(message)}</span>`;
+    }
+
+    async function chargerDictionnaire() {
+      try {
+        // Le "./" est important pour GitHub Pages :
+        // il charge fr.txt dans le même dossier que index.html.
+        const response = await fetch("./fr.txt", {
+          cache: "force-cache"
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status} ${response.statusText}`);
         }
 
+        const text = await response.text();
 
+        mots = text
+          .split(/\r?\n/)
+          .map(mot => mot.trim().toLowerCase())
+          .filter(Boolean);
 
-        /*
-            Recherche automatiquement
-            à chaque frappe
-        */
+        // On conserve le comportement de ton ancien code :
+        // priorité aux mots les plus courts.
+        mots.sort((a, b) => {
+          const difference = a.length - b.length;
+          return difference !== 0 ? difference : a.localeCompare(b, "fr");
+        });
 
-        input.addEventListener(
-            "input",
-            chercherMot
+        dictionnairePret = true;
+
+        status.textContent = `${mots.length.toLocaleString("fr-FR")} mots chargés`;
+        status.className = "ok";
+
+        console.log("Dictionnaire chargé :", mots.length, "mots");
+
+        // Si l'utilisateur a déjà écrit pendant le chargement,
+        // la recherche est relancée immédiatement.
+        chercherMot();
+      } catch (error) {
+        erreurDictionnaire = true;
+
+        console.error("Erreur chargement dictionnaire :", error);
+
+        status.textContent = "Erreur de chargement de fr.txt";
+        status.className = "error";
+
+        afficherMessage("Erreur dictionnaire");
+      }
+    }
+
+    function trouverMotSimple(recherche) {
+      return mots.find(mot => mot.includes(recherche)) ?? null;
+    }
+
+    function trouverMotAvecMorceaux(morceaux) {
+      for (const mot of mots) {
+        let positionRecherche = 0;
+        const positions = [];
+        let valide = true;
+
+        for (const morceau of morceaux) {
+          const index = mot.indexOf(morceau, positionRecherche);
+
+          if (index === -1) {
+            valide = false;
+            break;
+          }
+
+          positions.push({
+            debut: index,
+            fin: index + morceau.length
+          });
+
+          positionRecherche = index + morceau.length;
+        }
+
+        if (valide) {
+          return {
+            mot,
+            positions
+          };
+        }
+      }
+
+      return null;
+    }
+
+    function afficherMotSimple(mot, recherche) {
+      const index = mot.indexOf(recherche);
+
+      const avant = echapperHTML(mot.slice(0, index));
+      const milieu = echapperHTML(
+        mot.slice(index, index + recherche.length)
+      );
+      const apres = echapperHTML(
+        mot.slice(index + recherche.length)
+      );
+
+      resultat.innerHTML =
+        `${avant}<span class="match">${milieu}</span>${apres}`;
+    }
+
+    function afficherMotAvecMorceaux(mot, positions) {
+      let html = "";
+      let dernierePosition = 0;
+
+      for (const position of positions) {
+        html += echapperHTML(
+          mot.slice(dernierePosition, position.debut)
         );
 
+        html +=
+          `<span class="match">${
+            echapperHTML(mot.slice(position.debut, position.fin))
+          }</span>`;
 
+        dernierePosition = position.fin;
+      }
 
-        /*
-            Suppr / Backspace
+      html += echapperHTML(mot.slice(dernierePosition));
+      resultat.innerHTML = html;
+    }
 
-            Si aucun Suppr n'a été utilisé
-            depuis 2 secondes :
+    function chercherMot() {
+      const recherche = input.value
+        .trim()
+        .toLowerCase();
 
-            prochain Suppr
-            = efface tout.
+      if (recherche.length === 0) {
+        resultat.innerHTML = "";
+        return;
+      }
 
-            Sinon :
-            suppression normale
-            d'une lettre.
-        */
+      if (erreurDictionnaire) {
+        afficherMessage("Erreur dictionnaire");
+        return;
+      }
 
-        document.addEventListener(
-            "keydown",
+      // Très important :
+      // on ne dit plus "Aucun mot" tant que fr.txt n'est pas chargé.
+      if (!dictionnairePret) {
+        afficherMessage("Chargement…");
+        return;
+      }
 
-            function(event)
-            {
+      // Une seule syllabe / suite de caractères.
+      if (!recherche.includes(" ")) {
+        const motTrouve = trouverMotSimple(recherche);
 
-                if (
-                    event.key === "Delete" ||
-                    event.key === "Backspace"
-                )
-                {
+        if (!motTrouve) {
+          afficherMessage("Aucun mot");
+          return;
+        }
 
-                    const maintenant =
-                        Date.now();
+        afficherMotSimple(motTrouve, recherche);
+        return;
+      }
 
+      // Plusieurs morceaux séparés par des espaces.
+      // Exemple : "ou er"
+      const morceaux = recherche
+        .split(/\s+/)
+        .filter(Boolean);
 
-                    const tempsEcoule =
-                        maintenant -
-                        dernierSuppr;
+      if (morceaux.length === 0) {
+        resultat.innerHTML = "";
+        return;
+      }
 
+      const resultatRecherche = trouverMotAvecMorceaux(morceaux);
 
+      if (!resultatRecherche) {
+        afficherMessage("Aucun mot");
+        return;
+      }
 
-                    if (
-                        dernierSuppr === 0 ||
-                        tempsEcoule >= 2000
-                    )
-                    {
+      afficherMotAvecMorceaux(
+        resultatRecherche.mot,
+        resultatRecherche.positions
+      );
+    }
 
-                        event.preventDefault();
+    input.addEventListener("input", chercherMot);
 
+    // Garde ton système :
+    // - premier Backspace/Delete après 2 s = efface tout
+    // - les suivants dans les 2 s = comportement normal
+    document.addEventListener("keydown", event => {
+      if (event.key !== "Delete" && event.key !== "Backspace") {
+        return;
+      }
 
-                        input.value = "";
+      const maintenant = Date.now();
+      const tempsEcoule = maintenant - dernierSuppr;
 
+      if (dernierSuppr === 0 || tempsEcoule >= 2000) {
+        event.preventDefault();
 
-                        resultat.innerHTML =
-                            "";
+        input.value = "";
+        resultat.innerHTML = "";
+        input.focus();
+      }
 
+      dernierSuppr = maintenant;
+    });
 
-                        input.focus();
+    // Si l'onglet récupère le focus, on remet directement
+    // le curseur dans le champ.
+    window.addEventListener("focus", () => input.focus());
 
-
-                        chercherMot();
-
-                    }
-
-
-
-                    dernierSuppr =
-                        maintenant;
-
-                }
-
-            }
-        );
-
-    </script>
-
+    chargerDictionnaire();
+  </script>
 </body>
-
 </html>
