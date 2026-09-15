@@ -1,574 +1,343 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Russian BombParty Helper</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-    }
-
-    body {
-      overflow: hidden;
-      font-family: Arial, Helvetica, sans-serif;
-      background:
-        radial-gradient(circle at 20% 25%, rgba(100, 80, 180, 0.14), transparent 35%),
-        radial-gradient(circle at 80% 75%, rgba(180, 70, 130, 0.10), transparent 40%),
-        linear-gradient(135deg, #10121d 0%, #181525 35%, #211629 70%, #12121c 100%);
-      color: white;
-    }
-
-    .hearts {
-      position: fixed;
-      inset: 0;
-      overflow: hidden;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .heart {
-      position: absolute;
-      color: rgba(255, 130, 185, 0.10);
-      user-select: none;
-      animation: floatHeart 14s ease-in-out infinite;
-    }
-
-    @keyframes floatHeart {
-      0%, 100% {
-        transform: translateY(0) rotate(-5deg);
-        opacity: 0.45;
-      }
-
-      50% {
-        transform: translateY(-16px) rotate(5deg);
-        opacity: 1;
-      }
-    }
-
-    .container {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      height: 100vh;
-    }
-
-    #syllabe {
-      position: absolute;
-      top: 31%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-
-      width: min(90vw, 720px);
-      margin: 0;
-      padding: 0;
-
-      border: none;
-      outline: none;
-      background: transparent;
-
-      color: white;
-      caret-color: #ff91bd;
-
-      text-align: center;
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: clamp(42px, 7vw, 72px);
-      font-weight: 800;
-      line-height: 1;
-
-      text-shadow: 0 3px 18px rgba(0, 0, 0, 0.45);
-    }
-
-    #syllabe::placeholder {
-      color: rgba(255, 255, 255, 0.22);
-    }
-
-    #resultat {
-      position: absolute;
-      top: 54%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-
-      max-width: 94vw;
-      overflow: hidden;
-      text-overflow: ellipsis;
-
-      color: white;
-      text-align: center;
-      white-space: nowrap;
-
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: clamp(38px, 7vw, 72px);
-      font-weight: 800;
-      line-height: 1;
-
-      text-shadow: 0 3px 18px rgba(0, 0, 0, 0.45);
-    }
-
-    .match {
-      color: #ff8fbd;
-      text-shadow: 0 0 18px rgba(255, 100, 170, 0.25);
-    }
-
-    .muted {
-      color: rgba(255, 255, 255, 0.42);
-    }
-
-    #status {
-      position: absolute;
-      left: 50%;
-      bottom: 24px;
-      transform: translateX(-50%);
-
-      color: rgba(255, 255, 255, 0.30);
-      font-size: 13px;
-      text-align: center;
-      white-space: nowrap;
-      user-select: none;
-    }
-
-    #status.ok {
-      color: rgba(145, 255, 179, 0.40);
-    }
-
-    #status.error {
-      color: rgba(255, 130, 155, 0.70);
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Russian Word Helper</title>
+<style>
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0}
+body{
+  overflow:hidden;font-family:Arial,Helvetica,sans-serif;color:#fff;
+  background:
+    radial-gradient(circle at 20% 25%,rgba(100,80,180,.14),transparent 35%),
+    radial-gradient(circle at 80% 75%,rgba(180,70,130,.10),transparent 40%),
+    linear-gradient(135deg,#10121d 0%,#181525 35%,#211629 70%,#12121c 100%)
+}
+.hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.heart{position:absolute;color:rgba(255,130,185,.10);animation:float 14s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0);opacity:.45}50%{transform:translateY(-16px);opacity:1}}
+main{position:relative;width:100%;height:100vh}
+#syllabe{
+  position:absolute;top:31%;left:50%;transform:translate(-50%,-50%);
+  width:min(92vw,800px);border:0;outline:0;background:transparent;color:white;
+  caret-color:#ff91bd;text-align:center;font:800 clamp(42px,7vw,72px)/1 Arial;
+  text-shadow:0 3px 18px rgba(0,0,0,.45)
+}
+#syllabe::placeholder{color:rgba(255,255,255,.22)}
+#resultat{
+  position:absolute;top:54%;left:50%;transform:translate(-50%,-50%);
+  width:94vw;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font:800 clamp(38px,7vw,72px)/1 Arial;text-shadow:0 3px 18px rgba(0,0,0,.45)
+}
+.match{color:#ff8fbd;text-shadow:0 0 18px rgba(255,100,170,.25)}
+.muted{color:rgba(255,255,255,.42)}
+#status{
+  position:absolute;left:50%;bottom:24px;transform:translateX(-50%);
+  color:rgba(255,255,255,.32);font-size:13px;white-space:nowrap
+}
+.ok{color:rgba(145,255,179,.45)!important}
+.error{color:rgba(255,130,155,.72)!important}
+</style>
 </head>
-
 <body>
-  <div class="hearts" aria-hidden="true">
-    <span class="heart" style="left:6%;top:12%;font-size:30px;animation-delay:-2s">♥</span>
-    <span class="heart" style="left:14%;top:62%;font-size:18px;animation-delay:-8s">♥</span>
-    <span class="heart" style="left:23%;top:30%;font-size:24px;animation-delay:-4s">♥</span>
-    <span class="heart" style="left:31%;top:82%;font-size:34px;animation-delay:-10s">♥</span>
-    <span class="heart" style="left:41%;top:9%;font-size:17px;animation-delay:-6s">♥</span>
-    <span class="heart" style="left:53%;top:72%;font-size:25px;animation-delay:-1s">♥</span>
-    <span class="heart" style="left:62%;top:18%;font-size:36px;animation-delay:-9s">♥</span>
-    <span class="heart" style="left:72%;top:80%;font-size:20px;animation-delay:-5s">♥</span>
-    <span class="heart" style="left:83%;top:27%;font-size:28px;animation-delay:-11s">♥</span>
-    <span class="heart" style="left:93%;top:67%;font-size:32px;animation-delay:-3s">♥</span>
-    <span class="heart" style="left:4%;top:88%;font-size:16px;animation-delay:-7s">♥</span>
-    <span class="heart" style="left:88%;top:91%;font-size:19px;animation-delay:-12s">♥</span>
-  </div>
+<div class="hearts" aria-hidden="true">
+  <span class="heart" style="left:6%;top:12%;font-size:30px">♥</span>
+  <span class="heart" style="left:14%;top:62%;font-size:18px;animation-delay:-8s">♥</span>
+  <span class="heart" style="left:31%;top:82%;font-size:34px;animation-delay:-10s">♥</span>
+  <span class="heart" style="left:53%;top:72%;font-size:25px;animation-delay:-1s">♥</span>
+  <span class="heart" style="left:83%;top:27%;font-size:28px;animation-delay:-11s">♥</span>
+  <span class="heart" style="left:88%;top:91%;font-size:19px;animation-delay:-12s">♥</span>
+</div>
 
-  <main class="container">
-    <input
-      id="syllabe"
-      type="text"
-      placeholder="слог"
-      autocomplete="off"
-      autocapitalize="off"
-      spellcheck="false"
-      autofocus
-    >
+<main>
+  <input id="syllabe" type="text" placeholder="слог" autocomplete="off"
+         autocapitalize="off" spellcheck="false" autofocus>
+  <div id="resultat"></div>
+  <div id="status">Загрузка словаря…</div>
+</main>
 
-    <div id="resultat"></div>
-    <div id="status">Загрузка словаря…</div>
-  </main>
+<script>
+"use strict";
 
-  <script>
-    "use strict";
+const input = document.getElementById("syllabe");
+const resultat = document.getElementById("resultat");
+const status = document.getElementById("status");
 
-    const input = document.getElementById("syllabe");
-    const resultat = document.getElementById("resultat");
-    const status = document.getElementById("status");
+let entries = [];
+let ready = false;
+let lastDelete = 0;
 
-    let mots = [];
-    let dictionnairePret = false;
-    let erreurDictionnaire = false;
-    let dernierSuppr = 0;
+/*
+  Normalisation robuste :
+  - minuscules russes
+  - enlève les accents Unicode invisibles
+  - ё et е sont considérés équivalents pour la RECHERCHE
+  - espaces nettoyés
+*/
+function normalizeSearch(s) {
+  return s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .normalize("NFC")
+    .toLocaleLowerCase("ru-RU")
+    .replace(/ё/g, "е")
+    .trim();
+}
 
-    const collatorRusse = new Intl.Collator("ru", {
-      sensitivity: "base"
-    });
+/* Garde le mot original russe pour l'affichage. */
+function cleanWord(s) {
+  return s
+    .replace(/^\uFEFF/, "")
+    .normalize("NFC")
+    .trim()
+    .toLocaleLowerCase("ru-RU");
+}
 
-    function normaliser(texte) {
-      return texte
-        .normalize("NFC")
-        .trim()
-        .toLocaleLowerCase("ru-RU");
+function escapeHTML(s) {
+  return s.replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  })[c]);
+}
+
+function message(s) {
+  resultat.innerHTML = `<span class="muted">${escapeHTML(s)}</span>`;
+}
+
+/*
+  Convertit une position dans la version normalisée vers le mot affiché.
+  Utile notamment pour ё -> е.
+*/
+function displayRange(original, normalizedNeedle) {
+  const originalChars = Array.from(original);
+  let normalizedBuilt = "";
+
+  for (let start = 0; start < originalChars.length; start++) {
+    normalizedBuilt = "";
+    for (let end = start; end < originalChars.length; end++) {
+      normalizedBuilt += normalizeSearch(originalChars[end]);
+      if (normalizedBuilt === normalizedNeedle) return [start, end + 1];
+      if (!normalizedNeedle.startsWith(normalizedBuilt)) break;
     }
+  }
+  return null;
+}
 
-    function echapperHTML(texte) {
-      return texte.replace(/[&<>"']/g, caractere => {
-        const table = {
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          '"': "&quot;",
-          "'": "&#039;"
-        };
+async function loadDictionary() {
+  try {
+    /* ?v=3 évite qu'un vieux fr.txt reste coincé dans le cache GitHub/browser. */
+    const response = await fetch("./fr.txt?v=3", { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-        return table[caractere];
-      });
-    }
+    const text = await response.text();
+    const seen = new Set();
 
-    function afficherMessage(message) {
-      resultat.innerHTML =
-        `<span class="muted">${echapperHTML(message)}</span>`;
-    }
-
-    async function chargerDictionnaire() {
-      try {
-        /*
-          On garde le nom fr.txt pour que tu n'aies rien
-          à changer sur GitHub. Le contenu peut être russe.
-        */
-        const response = await fetch("./fr.txt", {
-          cache: "no-cache"
-        });
-
-        if (!response.ok) {
-          throw new Error(
-            `HTTP ${response.status} ${response.statusText}`
-          );
-        }
-
-        const texte = await response.text();
-
-        mots = texte
-          .split(/\r?\n/)
-          .map(normaliser)
-          .filter(Boolean);
-
-        /*
-          On retire les doublons.
-        */
-        mots = [...new Set(mots)];
+    entries = text.split(/\r?\n/)
+      .map(cleanWord)
+      .filter(word => {
+        if (!word) return false;
 
         /*
-          Priorité au mot valide le plus court,
-          mais jamais au mot exactement identique
-          à la syllabe tapée.
+          Le dico contient aussi des noms/mots avec tirets.
+          On les conserve. On retire seulement les lignes manifestement
+          inutilisables comme mots.
         */
-        mots.sort((a, b) => {
-          const differenceLongueur =
-            a.length - b.length;
+        if (!/[а-яё]/iu.test(word)) return false;
 
-          if (differenceLongueur !== 0) {
-            return differenceLongueur;
-          }
-
-          return collatorRusse.compare(a, b);
-        });
-
-        dictionnairePret = true;
-
-        status.textContent =
-          `${mots.length.toLocaleString("ru-RU")} слов загружено`;
-
-        status.className = "ok";
-
-        console.log(
-          "Русский словарь загружен:",
-          mots.length,
-          "слов"
-        );
-
-        chercherMot();
-      }
-      catch (error) {
-        erreurDictionnaire = true;
-
-        console.error(
-          "Ошибка загрузки словаря:",
-          error
-        );
-
-        status.textContent =
-          "Ошибка загрузки fr.txt";
-
-        status.className = "error";
-
-        afficherMessage("Ошибка словаря");
-      }
-    }
+        const key = word.toLocaleLowerCase("ru-RU");
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
+      .map(word => ({
+        word,
+        key: normalizeSearch(word)
+      }));
 
     /*
-      Recherche simple.
-
-      Exemple :
-      бакс
-
-      On refuse :
-      бакс
-
-      On accepte par exemple :
-      баксовый
-      небаксовый
-      etc. si présent dans le dictionnaire.
+      Mot le plus court d'abord.
+      À longueur égale : ordre russe.
     */
-    function trouverMotSimple(recherche) {
-      return mots.find(mot =>
-        mot.length > recherche.length &&
-        mot.includes(recherche)
-      ) ?? null;
-    }
-
-    /*
-      Recherche de plusieurs morceaux dans l'ordre.
-
-      Exemple :
-      ба ов
-
-      cherche un mot contenant d'abord "ба",
-      puis plus loin "ов".
-    */
-    function trouverMotAvecMorceaux(morceaux) {
-      const longueurMinimum =
-        morceaux.reduce(
-          (total, morceau) =>
-            total + morceau.length,
-          0
-        );
-
-      for (const mot of mots) {
-        /*
-          Évite également de renvoyer uniquement
-          la concaténation exacte des morceaux.
-        */
-        if (mot.length <= longueurMinimum) {
-          continue;
-        }
-
-        let positionRecherche = 0;
-        const positions = [];
-        let valide = true;
-
-        for (const morceau of morceaux) {
-          const index =
-            mot.indexOf(
-              morceau,
-              positionRecherche
-            );
-
-          if (index === -1) {
-            valide = false;
-            break;
-          }
-
-          positions.push({
-            debut: index,
-            fin: index + morceau.length
-          });
-
-          positionRecherche =
-            index + morceau.length;
-        }
-
-        if (valide) {
-          return {
-            mot,
-            positions
-          };
-        }
-      }
-
-      return null;
-    }
-
-    function afficherMotSimple(
-      mot,
-      recherche
-    ) {
-      const index =
-        mot.indexOf(recherche);
-
-      const avant =
-        echapperHTML(
-          mot.slice(0, index)
-        );
-
-      const milieu =
-        echapperHTML(
-          mot.slice(
-            index,
-            index + recherche.length
-          )
-        );
-
-      const apres =
-        echapperHTML(
-          mot.slice(
-            index + recherche.length
-          )
-        );
-
-      resultat.innerHTML =
-        `${avant}<span class="match">${milieu}</span>${apres}`;
-    }
-
-    function afficherMotAvecMorceaux(
-      mot,
-      positions
-    ) {
-      let html = "";
-      let dernierePosition = 0;
-
-      for (const position of positions) {
-        html +=
-          echapperHTML(
-            mot.slice(
-              dernierePosition,
-              position.debut
-            )
-          );
-
-        html +=
-          `<span class="match">${
-            echapperHTML(
-              mot.slice(
-                position.debut,
-                position.fin
-              )
-            )
-          }</span>`;
-
-        dernierePosition =
-          position.fin;
-      }
-
-      html +=
-        echapperHTML(
-          mot.slice(dernierePosition)
-        );
-
-      resultat.innerHTML = html;
-    }
-
-    function chercherMot() {
-      const recherche =
-        normaliser(input.value);
-
-      if (!recherche) {
-        resultat.innerHTML = "";
-        return;
-      }
-
-      if (erreurDictionnaire) {
-        afficherMessage("Ошибка словаря");
-        return;
-      }
-
-      if (!dictionnairePret) {
-        afficherMessage("Загрузка…");
-        return;
-      }
-
-      /*
-        Recherche classique :
-        une seule suite de caractères.
-      */
-      if (!recherche.includes(" ")) {
-        const motTrouve =
-          trouverMotSimple(recherche);
-
-        if (!motTrouve) {
-          afficherMessage("Нет слова");
-          return;
-        }
-
-        afficherMotSimple(
-          motTrouve,
-          recherche
-        );
-
-        return;
-      }
-
-      /*
-        Recherche de plusieurs morceaux.
-      */
-      const morceaux =
-        recherche
-          .split(/\s+/)
-          .map(normaliser)
-          .filter(Boolean);
-
-      if (morceaux.length === 0) {
-        resultat.innerHTML = "";
-        return;
-      }
-
-      const trouve =
-        trouverMotAvecMorceaux(
-          morceaux
-        );
-
-      if (!trouve) {
-        afficherMessage("Нет слова");
-        return;
-      }
-
-      afficherMotAvecMorceaux(
-        trouve.mot,
-        trouve.positions
-      );
-    }
-
-    input.addEventListener(
-      "input",
-      chercherMot
+    const collator = new Intl.Collator("ru");
+    entries.sort((a,b) =>
+      (a.word.length - b.word.length) || collator.compare(a.word,b.word)
     );
 
-    /*
-      Ton ancien comportement est conservé :
+    ready = true;
+    status.textContent = `${entries.length.toLocaleString("ru-RU")} слов загружено`;
+    status.className = "ok";
+    search();
+  } catch (e) {
+    console.error(e);
+    status.textContent = "Ошибка загрузки fr.txt";
+    status.className = "error";
+    message("Ошибка словаря");
+  }
+}
 
-      - premier Backspace/Delete après 2 secondes :
-        efface tout
+function findSingle(q) {
+  /*
+    1. cherche un mot PLUS LONG que la syllabe ;
+    2. la recherche se fait sur la version normalisée (ё = е) ;
+    3. si aucun mot plus long n'existe, on autorise finalement le mot exact.
+       Ça évite les faux "Нет слова".
+  */
+  let exact = null;
 
-      - les suivants dans les 2 secondes :
-        suppression normale lettre par lettre
-    */
-    document.addEventListener(
-      "keydown",
-      event => {
-        if (
-          event.key !== "Delete" &&
-          event.key !== "Backspace"
-        ) {
-          return;
-        }
+  for (const entry of entries) {
+    if (!entry.key.includes(q)) continue;
 
-        const maintenant =
-          Date.now();
+    if (entry.key === q) {
+      exact ??= entry;
+      continue;
+    }
 
-        const tempsEcoule =
-          maintenant -
-          dernierSuppr;
+    return entry;
+  }
 
-        if (
-          dernierSuppr === 0 ||
-          tempsEcoule >= 2000
-        ) {
-          event.preventDefault();
+  return exact;
+}
 
-          input.value = "";
-          resultat.innerHTML = "";
-          input.focus();
-        }
+function findParts(parts) {
+  for (const entry of entries) {
+    let cursor = 0;
+    const positions = [];
+    let ok = true;
 
-        dernierSuppr =
-          maintenant;
+    for (const part of parts) {
+      const index = entry.key.indexOf(part, cursor);
+      if (index < 0) {
+        ok = false;
+        break;
       }
-    );
+      positions.push([index, index + part.length]);
+      cursor = index + part.length;
+    }
 
-    window.addEventListener(
-      "focus",
-      () => input.focus()
-    );
+    if (ok) return { entry, positions };
+  }
+  return null;
+}
 
-    chargerDictionnaire();
-  </script>
+function highlightSingle(entry, q) {
+  const normalizedIndex = entry.key.indexOf(q);
+  if (normalizedIndex < 0) return escapeHTML(entry.word);
+
+  /*
+    Pour le russe normal, longueur normalisée == longueur affichée,
+    y compris ё/е. On utilise donc l'index directement.
+  */
+  const before = entry.word.slice(0, normalizedIndex);
+  const middle = entry.word.slice(normalizedIndex, normalizedIndex + q.length);
+  const after = entry.word.slice(normalizedIndex + q.length);
+
+  return `${escapeHTML(before)}<span class="match">${escapeHTML(middle)}</span>${escapeHTML(after)}`;
+}
+
+function highlightParts(entry, positions) {
+  let html = "";
+  let cursor = 0;
+
+  for (const [start,end] of positions) {
+    html += escapeHTML(entry.word.slice(cursor,start));
+    html += `<span class="match">${escapeHTML(entry.word.slice(start,end))}</span>`;
+    cursor = end;
+  }
+
+  html += escapeHTML(entry.word.slice(cursor));
+  return html;
+}
+
+function search() {
+  const raw = input.value;
+  const q = normalizeSearch(raw);
+
+  if (!q) {
+    resultat.innerHTML = "";
+    return;
+  }
+
+  if (!ready) {
+    message("Загрузка…");
+    return;
+  }
+
+  const parts = q.split(/\s+/).filter(Boolean);
+
+  if (parts.length === 1) {
+    const found = findSingle(parts[0]);
+    if (!found) {
+      message("Нет слова");
+      return;
+    }
+
+    resultat.innerHTML = highlightSingle(found, parts[0]);
+    return;
+  }
+
+  const found = findParts(parts);
+  if (!found) {
+    message("Нет слова");
+    return;
+  }
+
+  resultat.innerHTML = highlightParts(found.entry, found.positions);
+}
+
+input.addEventListener("input", search);
+
+/*
+  Enter = passe au prochain mot contenant la même syllabe.
+  Pratique si le premier mot proposé ne te convient pas.
+*/
+let cycleQuery = "";
+let cycleIndex = -1;
+
+input.addEventListener("keydown", event => {
+  if (event.key !== "Enter" || !ready) return;
+
+  event.preventDefault();
+  const q = normalizeSearch(input.value);
+  if (!q || q.includes(" ")) return;
+
+  const candidates = entries.filter(e => e.key.includes(q) && e.key !== q);
+  if (!candidates.length) return;
+
+  if (cycleQuery !== q) {
+    cycleQuery = q;
+    cycleIndex = 0;
+  } else {
+    cycleIndex = (cycleIndex + 1) % candidates.length;
+  }
+
+  resultat.innerHTML = highlightSingle(candidates[cycleIndex], q);
+});
+
+/* Reset du cycle dès que la syllabe change. */
+input.addEventListener("input", () => {
+  cycleQuery = "";
+  cycleIndex = -1;
+});
+
+/* Ton comportement Backspace/Delete est conservé. */
+document.addEventListener("keydown", event => {
+  if (event.key !== "Backspace" && event.key !== "Delete") return;
+
+  const now = Date.now();
+  if (lastDelete === 0 || now - lastDelete >= 2000) {
+    event.preventDefault();
+    input.value = "";
+    resultat.innerHTML = "";
+    input.focus();
+    cycleQuery = "";
+    cycleIndex = -1;
+  }
+  lastDelete = now;
+});
+
+window.addEventListener("focus", () => input.focus());
+
+loadDictionary();
+</script>
 </body>
 </html>
